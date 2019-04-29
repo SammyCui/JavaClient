@@ -30,7 +30,6 @@ public class Client {
 
 
             System.out.print("Press Enter to request a quote: ");
-            String enter = kbd.nextLine().trim();
 
 
 
@@ -39,8 +38,8 @@ public class Client {
                             sock.getInputStream()
                     )
             );
-            to = new PrintWriter(sock.getOutputStream(),
-                    true);
+
+            to = new PrintWriter(sock.getOutputStream(), true);
             while (true) {
                 System.out.println("Waiting ...");
                 String response = from.readLine();
