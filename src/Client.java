@@ -20,8 +20,9 @@ public class Client {
 
         //System.out.print("Enter IP address: ");
         //String ip = kbd.nextLine().trim();
-      //sammy  String ip = "10.70.20.65"; //TODO should get input from console
-        String ip = "10.32.12.115";
+      //sammy
+        String ip = "10.70.20.65"; //TODO should get input from console
+        //String ip = "10.32.12.115";
         // System.out.println("hello");
 
         Random d = new Random();
