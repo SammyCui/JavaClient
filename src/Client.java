@@ -20,8 +20,8 @@ public class Client {
 
         //System.out.print("Enter IP address: ");
         //String ip = kbd.nextLine().trim();
-        String ip = "10.70.20.65"; //TODO should get input from console
-
+      //sammy  String ip = "10.70.20.65"; //TODO should get input from console
+        String ip = "10.32.12.115";
         // System.out.println("hello");
 
         Random d = new Random();
@@ -76,8 +76,10 @@ public class Client {
                 System.out.println(response);
 
 
-                System.out.print("Press Enter "+numbers.length+" factors: ");
-                String[] guesss = kbd.nextLine().trim().split(",");
+              //  System.out.print("Press Enter "+numbers.length+" factors: ");
+
+
+                String[] guesss = factorGuess(numbers);
 
                 // user should enter possible responses
                 //  int guesss [] = {5,2,3,4}; //TODO should be a list of numbers entered by the user
@@ -87,6 +89,7 @@ public class Client {
                     //should give error that the numbers entered do not correspond to number requested
                     System.out.println("Error please enter "+numbers.length+" numbers");
 
+                    //needs to go back
                 }else{
                     String listGuesses = "";
 
@@ -104,6 +107,9 @@ public class Client {
 
                     // TODO three numbers were sent now we need to send it back to the server
                     System.out.println(from.readLine());
+
+
+                   /*
                     for (int i =0 ; i < guesss.length; i++) {
 
                         BigInteger bigInteger = new BigInteger(numbers[i]);
@@ -119,6 +125,9 @@ public class Client {
                             //trygain -
                         }
                     }
+
+
+                    */
                     // String s = kbd.nextLine();
                     // to.println(s);
 
@@ -135,12 +144,44 @@ public class Client {
     }
 
 
-    public ArrayList factorGuess (String[] numbers){
+    public static String[] factorGuess (String[] numbers){
 
 
-        ArrayList guesses = new ArrayList<>();
+        ArrayList <String> guesses = new ArrayList<String>();
 
-        return guesses ;
+        for (String n: numbers){
+
+          ;
+            BigInteger number = new BigInteger(n);
+           // System.out.println("Number "+n + " and "+number);
+
+
+            for (BigInteger bi = BigInteger.valueOf(2); //start from 2
+                 bi.compareTo(number) != 0; //stop when the numbers are equal
+                 bi = bi.add(BigInteger.ONE)) {
+
+//                    System.out.println(number+" testing "+number.nextProbablePrime() );
+
+                if (number.mod(bi) == BigInteger.ZERO){
+                    System.out.println("Factor found "+bi);
+
+                    guesses.add(String.valueOf(bi));
+                    break;
+                }
+
+                if (number.equals(bi)){ //we did not find factors so add itself as a factor
+
+                    System.out.println("no factors found");
+                    guesses.add(String.valueOf(bi));
+                }
+            }
+
+
+        }
+        String result[]=guesses.toArray(new String[guesses.size()]);
+
+
+        return result ;
     }
 
 
