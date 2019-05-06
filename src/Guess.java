@@ -66,16 +66,15 @@ public class Guess implements Runnable {
 
         for (BigInteger bi = BigInteger.valueOf(2); //start from 2
              bi.compareTo(number) != 0; //stop when the numbers are equal
-             bi = bi.add(BigInteger.ONE)) {
+             bi = bi.nextProbablePrime()) {
 
-//                    System.out.println(number+" testing "+number.nextProbablePrime() );
 
-            if (number.mod(bi) == BigInteger.ZERO) {
-                System.out.println("Thread "+this.threadNumber+" Factor found " + bi);
+                if (number.mod(bi) == BigInteger.ZERO) {
+                    System.out.println("Thread "+this.threadNumber+" Factor found " + bi);
 
-                guesses.add(String.valueOf(bi));
-                return String.valueOf(bi);
-            }
+                    guesses.add(String.valueOf(bi));
+                    return String.valueOf(bi);
+                }
 
 
         }

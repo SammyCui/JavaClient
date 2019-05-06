@@ -29,56 +29,61 @@ public class MultiThreadedServer implements Runnable {
     public void run() {
         synchronized (this){
             try{
+            System.out.println("Connected to " +
+                    clientsocket.getInetAddress());
+            BufferedReader from = new BufferedReader(
+                    new InputStreamReader(
+                            clientsocket.getInputStream()
+                    )
+            );
 
-                System.out.println("Connected to " +
-                        clientsocket.getInetAddress());
-                BufferedReader from = new BufferedReader(
-                        new InputStreamReader(
-                                clientsocket.getInputStream()
-                        )
-                );
+            PrintWriter to = new PrintWriter(clientsocket.getOutputStream(),
+                    true);
 
-                PrintWriter to = new PrintWriter(clientsocket.getOutputStream(),
-                        true);
+            while(true){
 
-                String request = from.readLine();
-                if (!request.equals(null)){
-                    System.out.println("Received quote request from client ");
-                    Random rand = new Random();
-                    BigInteger bigint = num_generator();
 
-                    System.out.println(bigint);
-                    int rand1 = rand.nextInt(4) + 2;
-                    String stringarray = "";
-                    BigInteger[] outputarray = new BigInteger[rand1];
 
-                    for (int i=0; i <rand1; i++){
+                    String request = from.readLine();
+                    if (!request.equals(null)){
+                        System.out.println("Received quote request from client ");
+                        Random rand = new Random();
+                        BigInteger bigint = num_generator();
 
-                        BigInteger rand2 = this.num_generator();
-                        stringarray = stringarray.concat(rand2.toString());
-                        stringarray = stringarray.concat(",");
-                        outputarray[i] = rand2;
-                    }
-                    System.out.println("Sending" + stringarray + "to client");
-                    to.println(stringarray);
-                    boolean iscorrect = true;
-                    for (int i = 0; i < rand1; i++){
-                        String inputline = from.readLine();
-                        System.out.println("Verifying factor: " + inputline + "for: " + outputarray[i]);
-                        BigInteger input = new BigInteger(inputline);
-                        if (outputarray[i].mod(input) == BigInteger.ZERO){
-                            System.out.println("Correct!");
+                        System.out.println(bigint);
+                        int rand1 = rand.nextInt(4) + 2;
+                        String stringarray = "";
+                        BigInteger[] outputarray = new BigInteger[rand1];
+
+                        for (int i=0; i <rand1; i++){
+
+                            BigInteger rand2 = this.num_generator();
+                            stringarray = stringarray.concat(rand2.toString());
+                            stringarray = stringarray.concat(",");
+                            outputarray[i] = rand2;
                         }
-                        else{
-                            System.out.println("Incorrect");
-                            iscorrect = false;
+                        System.out.println("Sending" + stringarray + "to client");
+                        to.println(stringarray);
+                        boolean iscorrect = true;
+                        for (int i = 0; i < rand1; i++){
+                            String inputline = from.readLine();
+                            System.out.println("Verifying factor: " + inputline + "for: " + outputarray[i]);
+                            BigInteger input = new BigInteger(inputline);
+                            if (outputarray[i].mod(input) == BigInteger.ZERO){
+                                System.out.println("Correct!");
+                            }
+                            else{
+                                System.out.println("Incorrect");
+                                iscorrect = false;
+                            }
                         }
-                    }
-                    if (iscorrect){
-                        to.println(this.quote);
+                        if (iscorrect){
+                            to.println(this.quote);
+                        }
                     }
                 }
-            }catch (IOException e){
+            }
+            catch (IOException e){
                 e.printStackTrace();
             }
 
