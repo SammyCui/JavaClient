@@ -1,49 +1,54 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.net.Socket;
+
 import java.util.ArrayList;
 
 public class Guess implements Runnable {
 
-    String number;
-    PrintWriter to;
-    BufferedReader from;
+     String number;
     int threadNumber;
+    PrintWriter to;
+    Socket sock;
 
-    public Guess(String number, PrintWriter to, BufferedReader from, int threadNumber) {
+    public Guess(Socket socket){
+        threadNumber = 1;
+        this.sock = socket;
+    }
 
-        this.number = number;
-        this.to = to;
-        this.from = from;
-        this.threadNumber = threadNumber;
+    public void set(String value){
+        this.number = value;
+
     }
 
 
     @Override
-    public void run() {
+    public synchronized void run() {
 
 
-          //  System.out.println(this.number);
-
-            String guesss = factorGuess(number);
-
-            // user should enter possible responses
-            //  int guesss [] = {5,2,3,4}; //TODO should be a list of numbers entered by the user
+        System.out.println(" Starting Thread "+threadNumber+ " for: "+ number);
+        String guesss = this.factorGuess(number);
 
 
-            String listGuesses = "";
+        // TODO three numbers were sent now we need to send it back to the server
+        try {
+
+            to = new PrintWriter(sock.getOutputStream(), //TODO should handle data going to server
+                    true);
 
 
             to.println(guesss);
-            System.out.println("send factors " + listGuesses); //TODO send the numbers to the server
+            System.out.println("sending factors " + guesss); //TODO send the numbers to the server
 
-            // TODO three numbers were sent now we need to send it back to the server
-            try {
-                System.out.println(from.readLine());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.threadNumber ++;
+
 
 
 
