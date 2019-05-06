@@ -9,26 +9,24 @@ import java.util.ArrayList;
 
 public class Guess implements Runnable {
 
-     String number;
+
     int threadNumber;
     PrintWriter to;
     Socket sock;
+    String[] numbers;
 
-    public Guess(Socket socket){
-        threadNumber = 1;
+    public Guess(Socket socket, String[] numbers){
+        threadNumber = 0;
         this.sock = socket;
+        this.numbers = numbers;
     }
 
-    public void set(String value){
-        this.number = value;
-
-    }
 
 
     @Override
     public synchronized void run() {
 
-
+        String number = numbers[threadNumber];
         System.out.println(" Starting Thread "+threadNumber+ " for: "+ number);
         String guesss = this.factorGuess(number);
 

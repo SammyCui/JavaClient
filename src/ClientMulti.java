@@ -42,7 +42,6 @@ public class ClientMulti {
             to = new PrintWriter(sock.getOutputStream(), //TODO should handle data going to server
                     true);
 
-            Guess guess = new Guess(sock);
 
 
             while (true) {
@@ -55,12 +54,15 @@ public class ClientMulti {
 
 
 
-                String numberstring =from.readLine();
 
-                // String response = from.readLine(); TODO should get response from server
+                String numberstring =from.readLine();
 
                 //should receive a random number for server
                 String numbers [] = numberstring.split(",");  //TODO list should come from server
+
+
+                Guess guess = new Guess(sock, numbers);
+
 
                 String listNum = "";
                 for (int i = 0; i < numbers.length;i++ ){
@@ -84,10 +86,13 @@ public class ClientMulti {
 
                 for (String number : numbers){
 
-                    guess.set(number);
                     Thread t = new Thread(guess);
                     t.start();
                 }
+
+                String quote = from.readLine();
+                System.out.println(quote);
+
 
             }
 
