@@ -21,8 +21,8 @@ public class ClientMulti {
         //System.out.print("Enter IP address: ");
         //String ip = kbd.nextLine().trim();
         //sammy
-        String ip = "10.70.20.65"; //TODO should get input from console
-        //String ip = "10.32.12.115";
+        //String ip = "10.70.20.65"; //TODO should get input from console
+        String ip = "10.60.28.86";
         // System.out.println("hello");
 
         Random d = new Random();

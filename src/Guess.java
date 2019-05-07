@@ -28,7 +28,6 @@ public class Guess implements Runnable {
 
             String guesss = factorGuess(number);
 
-            // user should enter possible responses
             //  int guesss [] = {5,2,3,4}; //TODO should be a list of numbers entered by the user
 
 
