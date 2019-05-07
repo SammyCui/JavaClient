@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -18,98 +19,57 @@ public class ClientMulti {
         PrintWriter to;
         Scanner kbd = new Scanner(System.in);
 
-        //System.out.print("Enter IP address: ");
-        //String ip = kbd.nextLine().trim();
-        //sammy
-        //String ip = "10.70.20.65"; //TODO should get input from console
-        String ip = "10.60.28.86";
-        // System.out.println("hello");
+        System.out.print("Enter IP address: ");
+        String ip = kbd.nextLine().trim();
+
 
         Random d = new Random();
 
         try {
+            System.out.println("Attempting connection to "+ip+"...Please Wait!" );
             sock = new Socket(ip, 12346);
 
             //client successfully connect to server
             System.out.println("Connected to " +
-                    sock.getInetAddress()); //hello
+                    sock.getInetAddress());
 
-
-
-            from = new BufferedReader(new InputStreamReader(sock.getInputStream()) //TODO should handle data coming from server
+            from = new BufferedReader(new InputStreamReader (sock.getInputStream()) //handles data coming from server
             );
-            to = new PrintWriter(sock.getOutputStream(), //TODO should handle data going to server
+            to = new PrintWriter(sock.getOutputStream(), // handle data going to server
                     true);
 
 
-
             while (true) {
-                System.out.print("Press Enter to request a quote: ");
-                String enter = kbd.nextLine().trim();
-                System.out.println("Requesting Quote ...");
 
-                to.println("Request"); //send request to server
+                System.out.print("Press <Enter> to request a quote: ");
+                kbd.nextLine().trim();
+                System.out.println("Requesting quote");
+                to.println(); //send random request to server, to let it know we want factors
 
-                System.out.println("Waiting ...");
+                String numbers [] = from.readLine().split(",");  //read data sent from server //should receive a random list of primes of primes from server
 
+                Guess guess = new Guess(sock, numbers); //create object to compute the factors of the numbers provided by server, also used to synchronize
 
-                String quote =from.readLine();
-                System.out.println("Data from server "+quote);
+                String listNum = Arrays.toString(numbers).replace("[","").replace("]","");
 
-                // String response = from.readLine(); TODO should get response from server
-
-                //should receive a random number for server
-                String numbers [] = quote.split(",");  //TODO list should come from server
-
-                String listNum = "";
-                for (int i = 0; i < numbers.length;i++ ){
-
-                    if (i == 0) {
-                        listNum = String.valueOf(numbers[i]);
-                    }else {
-                        listNum = listNum + "," + numbers[i];
-                    }
-
-
-                }
 
                 String response = "Finding factors of "+listNum;
                 System.out.println(response);
 
-
-                //  System.out.print("Press Enter "+numbers.length+" factors: ");
-
                 //start as many threads as there are numbers to be guessed
-                int threadNumber =0;
-
                 for (String number : numbers){
 
-                    threadNumber ++;
-
-                    BufferedReader fromLocal = new BufferedReader(new InputStreamReader(sock.getInputStream()) //TODO should handle data coming from server
-                    );
-                    PrintWriter toLocal = new PrintWriter(sock.getOutputStream(), //TODO should handle data going to server
-                            true);
-
-
-
-                    System.out.println(" Starting Thread "+threadNumber);
-                    Thread t = new Thread( new Guess(number,toLocal,fromLocal,threadNumber));
+                    Thread t = new Thread(guess); //create new thread
                     t.start();
                 }
 
+                String quote = from.readLine(); //read quote from server
+                System.out.println("Received Correct from Server");
+                System.out.println("Received Quote: \""+quote+"\"");
+
             }
-
-
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
-
-
-
 }
