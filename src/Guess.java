@@ -61,15 +61,15 @@ public class Guess implements Runnable {
 
         ;
         BigInteger number = new BigInteger(n);
+        long numberlong = number.longValue();
         // System.out.println("Number "+n + " and "+number);
 
+        Long upperbound = this.sqrt(number).longValue();
+        System.out.println(upperbound);
+        for (long bi = 2; bi <=upperbound; bi++) {
 
-        for (BigInteger bi = BigInteger.valueOf(2); //start from 2
-             bi.compareTo(number) != 0; //stop when the numbers are equal
-             bi = bi.nextProbablePrime()) {
 
-
-                if (number.mod(bi) == BigInteger.ZERO) {
+                if (numberlong % bi == 0) {
                     System.out.println("Thread "+this.threadNumber+" Factor found " + bi);
 
                     guesses.add(String.valueOf(bi));
@@ -85,6 +85,20 @@ public class Guess implements Runnable {
         System.out.println("no factors found send itself");
         return n;
 
+    }
+
+    public BigInteger sqrt(BigInteger x) {
+        BigInteger div = BigInteger.ZERO.setBit(x.bitLength()/2);
+        BigInteger div2 = div;
+        // Loop until we hit the same value twice in a row, or wind
+        // up alternating.
+        for(;;) {
+            BigInteger y = div.add(x.divide(div)).shiftRight(1);
+            if (y.equals(div) || y.equals(div2))
+                return y;
+            div2 = div;
+            div = y;
+        }
     }
 
 }

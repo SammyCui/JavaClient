@@ -62,24 +62,29 @@ public class MultiThreadedServer implements Runnable {
                             stringarray = stringarray.concat(",");
                             outputarray[i] = rand2;
                         }
-                        System.out.println("Sending" + stringarray + "to client");
+                        System.out.println("Sending: " + stringarray + "to client");
                         to.println(stringarray);
-                        boolean iscorrect = true;
-                        for (int i = 0; i < rand1; i++){
-                            String inputline = from.readLine();
-                            System.out.println("Verifying factor: " + inputline + "for: " + outputarray[i]);
-                            BigInteger input = new BigInteger(inputline);
-                            if (outputarray[i].mod(input) == BigInteger.ZERO){
-                                System.out.println("Correct!");
+                        while(true){
+                            boolean iscorrect = true;
+                            
+                            for (int i = 0; i < rand1; i++){
+                                String inputline = from.readLine();
+                                System.out.println("Verifying factor: " + inputline + "for: " + outputarray[i]);
+                                BigInteger input = new BigInteger(inputline);
+                                if (outputarray[i].mod(input) == BigInteger.ZERO){
+                                    System.out.println("Correct!");
+                                }
+                                else{
+                                    System.out.println("Incorrect, please enter factors again");
+                                    iscorrect = false;
+                                }
                             }
-                            else{
-                                System.out.println("Incorrect");
-                                iscorrect = false;
+                            if (iscorrect){
+                                to.println(this.quote);
+                                break;
                             }
                         }
-                        if (iscorrect){
-                            to.println(this.quote);
-                        }
+
                     }
                 }
             }
@@ -94,8 +99,8 @@ public class MultiThreadedServer implements Runnable {
     public static BigInteger num_generator(){
         Random rand1 = new Random();
 
-        BigInteger prime1 = BigInteger.probablePrime(16, rand1);
-        BigInteger prime2 = BigInteger.probablePrime(16, rand1);
+        BigInteger prime1 = BigInteger.probablePrime(31, rand1);
+        BigInteger prime2 = BigInteger.probablePrime(31, rand1);
         BigInteger bigint = prime1.multiply(prime2);
         return bigint ;
     }

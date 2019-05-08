@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
-
+import java.util.Arrays;
 
 public class ClientMulti {
 
@@ -18,15 +18,9 @@ public class ClientMulti {
         PrintWriter to;
         Scanner kbd = new Scanner(System.in);
 
+        String ip = "10.70.16.100"; //TODO should get input from console
 
-        //System.out.print("Enter IP address: ");
-        //String ip = kbd.nextLine().trim();
-        //sammy
-        String ip = "10.32.95.68"; //TODO should get input from console
-        //String ip = "10.32.12.115";
-        // System.out.println("hello");
 
-        Random d = new Random();
 
         try {
             sock = new Socket(ip, 12346);
@@ -46,53 +40,31 @@ public class ClientMulti {
 
             while (true) {
 
-                System.out.println("Press Enter to request a quote: ");
-                String enter = kbd.nextLine().trim();
+                System.out.print("Press <Enter> to request a quote: ");
+                kbd.nextLine().trim();
+                System.out.println("Requesting quote");
+                to.println(); //send random request to server, to let it know we want factors
 
+                String numbers [] = from.readLine().split(",");  //read data sent from server //should receive a random list of primes of primes from server
 
-                to.println("Request"); //send request to server
+                Guess guess = new Guess(sock, numbers); //create object to compute the factors of the numbers provided by server, also used to synchronize
 
+                String listNum = Arrays.toString(numbers).replace("[","").replace("]","");
 
-
-
-                String numberstring =from.readLine();
-
-                //should receive a random number for server
-                String numbers [] = numberstring.split(",");  //TODO list should come from server
-
-
-                Guess guess = new Guess(sock, numbers);
-
-
-                String listNum = "";
-                for (int i = 0; i < numbers.length;i++ ){
-
-                    if (i == 0) {
-                        listNum = String.valueOf(numbers[i]);
-                    }else {
-                        listNum = listNum + "," + numbers[i];
-                    }
-
-
-                }
 
                 String response = "Finding factors of "+listNum;
                 System.out.println(response);
 
-
-                //  System.out.print("Press Enter "+numbers.length+" factors: ");
-
                 //start as many threads as there are numbers to be guessed
-
                 for (String number : numbers){
 
-                    Thread t = new Thread(guess);
+                    Thread t = new Thread(guess); //create new thread
                     t.start();
                 }
 
-                String quote = from.readLine();
-                System.out.println(quote);
-
+                String quote = from.readLine(); //read quote from server
+                System.out.println("Received Correct from Server");
+                System.out.println("Received Quote: \""+quote+"\"");
 
             }
 
