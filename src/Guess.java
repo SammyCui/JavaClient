@@ -13,39 +13,36 @@ public class Guess implements Runnable {
     int threadNumber;
     PrintWriter to;
     Socket sock;
-    String[] numbers;
+    String number;
 
-    public Guess(Socket socket, String[] numbers){
-        threadNumber = 0;
+    public Guess(Socket socket, String number, int threadNumber){
+        this.threadNumber = threadNumber;
         this.sock = socket;
-        this.numbers = numbers;
+        this.number = number;
     }
 
 
 
     @Override
-    public synchronized void run() {
+    public void run() {
 
-        String number = numbers[threadNumber];
-        System.out.println(" Starting Thread "+threadNumber+ " for: "+ number);
+        System.out.println("Starting Thread "+threadNumber+ " for: "+ number);
         String guesss = this.factorGuess(number);
 
 
-        // TODO three numbers were sent now we need to send it back to the server
         try {
 
             to = new PrintWriter(sock.getOutputStream(), //TODO should handle data going to server
                     true);
 
-
-            to.println(guesss);
+            String tuple = guesss.concat(",").concat(Integer.toString(this.threadNumber));
+            to.println(tuple);
             System.out.println("sending factors " + guesss); //TODO send the numbers to the server
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        this.threadNumber ++;
 
 
 
@@ -57,25 +54,21 @@ public class Guess implements Runnable {
 
         ArrayList<String> guesses = new ArrayList<String>();
 
-        //    for (String n: numbers){
 
-        ;
         BigInteger number = new BigInteger(n);
         long numberlong = number.longValue();
         // System.out.println("Number "+n + " and "+number);
 
         Long upperbound = this.sqrt(number).longValue();
-        System.out.println(upperbound);
         for (long bi = 2; bi <=upperbound; bi++) {
 
 
-                if (numberlong % bi == 0) {
-                    System.out.println("Thread "+this.threadNumber+" Factor found " + bi);
+            if (numberlong % bi == 0) {
+                System.out.println("Thread "+this.threadNumber+" Factor found " + bi);
 
-                    guesses.add(String.valueOf(bi));
-                    return String.valueOf(bi);
-                }
-
+                guesses.add(String.valueOf(bi));
+                return String.valueOf(bi);
+            }
 
         }
 
