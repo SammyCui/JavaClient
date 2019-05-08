@@ -53,10 +53,10 @@ public class Server {
                             stringarray = stringarray.concat(",");
                         }
                     }
-                    System.out.println("Sending" + stringarray + "to client");
+                    System.out.println("Sending: " + stringarray + ": to client");
                     to.println(stringarray);
                     String inputline = from.readLine();
-                    System.out.println(inputline);
+                    //System.out.println(inputline);
                     System.out.println("Verifying factors");
                     String[] inputarray = inputline.split(",");
                     boolean Isvalid = true;
@@ -67,8 +67,8 @@ public class Server {
                         }
                     }
                     if (Isvalid) {
-                        System.out.println("sending correct");
-                        System.out.println("Sending quote" + quote);
+                        System.out.println("Sending \"Correct\"");
+                        System.out.println("Sending quote: \"" + quote+"\"");
                         to.println(quote);
                     }
 

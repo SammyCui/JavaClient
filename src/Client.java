@@ -5,9 +5,9 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
-
 
 public class Client {
 
@@ -18,16 +18,14 @@ public class Client {
         PrintWriter to;
         Scanner kbd = new Scanner(System.in);
 
-        //System.out.print("Enter IP address: ");
-        //String ip = kbd.nextLine().trim();
-      //sammy
-        String ip = "10.70.20.65"; //TODO should get input from console
-        //String ip = "10.32.12.115";
-        // System.out.println("hello");
+        System.out.print("Enter IP address: ");
+        String ip = kbd.nextLine().trim();
 
         Random d = new Random();
 
         try {
+            System.out.println("Attempting connection to "+ip+"...Please Wait!" );
+
             sock = new Socket(ip, 12346);
 
             //client successfully connect to server
@@ -44,40 +42,29 @@ public class Client {
 
 
             while (true) {
-                System.out.print("Press Enter to request a quote: ");
+                System.out.print("Press <Enter> to request a quote: ");
                 String enter = kbd.nextLine().trim();
                 System.out.println("Requesting Quote ...");
 
                 to.println("Request"); //send request to server
 
-                System.out.println("Waiting ...");
 
 
                 String quote =from.readLine();
-                System.out.println("Data from server "+quote);
+                // System.out.println("Data from server "+quote);
 
                 // String response = from.readLine(); TODO should get response from server
 
                 //should receive a random number for server
                 String numbers [] = quote.split(",");  //TODO list should come from server
 
-                String listNum = "";
-                for (int i = 0; i < numbers.length;i++ ){
-
-                    if (i == 0) {
-                        listNum = String.valueOf(numbers[i]);
-                    }else {
-                        listNum = listNum + "," + numbers[i];
-                    }
-
-
-                }
+                String listNum = Arrays.toString(numbers).replace("[","").replace("]","");
 
                 String response = "Finding factors of "+listNum;
                 System.out.println(response);
 
 
-              //  System.out.print("Press Enter "+numbers.length+" factors: ");
+                //  System.out.print("Press Enter "+numbers.length+" factors: ");
 
 
                 String[] guesss = factorGuess(numbers);
@@ -90,7 +77,7 @@ public class Client {
                     //should give error that the numbers entered do not correspond to number requested
                     System.out.println("Error please enter "+numbers.length+" numbers");
 
-                    //needs to go back
+
                 }else{
                     String listGuesses = "";
 
@@ -104,68 +91,30 @@ public class Client {
                     }
 
                     to.println(listGuesses);
-                    System.out.println("send factors "+listGuesses); //TODO send the numbers to the server
+                    System.out.println("Send factors to server: "+listGuesses); //TODO send the numbers to the server
 
-                    // TODO three numbers were sent now we need to send it back to the server
-                    System.out.println(from.readLine());
-
-
-                   /*
-                    for (int i =0 ; i < guesss.length; i++) {
-
-                        BigInteger bigInteger = new BigInteger(numbers[i]);
-                        BigInteger bigIntegerGuess = new BigInteger(guesss[i]);
-                        BigInteger zero = new BigInteger("0");
-                        //check whether numbers entered are factors - should be done by server
-                        if (bigInteger.mod(bigIntegerGuess) == zero) {
-                            //it is a factor so keep going
-                        } else {
-                            //not a factor so break
-                            System.out.println(guesss[i] + " is not a factor of " + numbers[i]);
-
-                            //trygain -
-                        }
-                    }
-
-
-                    */
-                    // String s = kbd.nextLine();
-                    // to.println(s);
+                    //String quote = from.readLine(); //read quote from server
+                    System.out.println("Received \"Correct\" from Server");
+                    System.out.println("Received Quote: \""+from.readLine()+"\"");
 
                 }
-
-
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
     public static String[] factorGuess (String[] numbers){
-
-
         ArrayList <String> guesses = new ArrayList<String>();
-
         for (String n: numbers){
-
-          ;
             BigInteger number = new BigInteger(n);
-           // System.out.println("Number "+n + " and "+number);
-
-
             for (BigInteger bi = BigInteger.valueOf(2); //start from 2
                  bi.compareTo(number) != 0; //stop when the numbers are equal
                  bi = bi.add(BigInteger.ONE)) {
-
-//                    System.out.println(number+" testing "+number.nextProbablePrime() );
-
                 if (number.mod(bi) == BigInteger.ZERO){
-                    System.out.println("Factor found "+bi);
-
+                    // System.out.println("Factor found "+bi);
                     guesses.add(String.valueOf(bi));
                     break;
                 }
@@ -176,12 +125,8 @@ public class Client {
                     guesses.add(String.valueOf(bi));
                 }
             }
-
-
         }
         String result[]=guesses.toArray(new String[guesses.size()]);
-
-
         return result ;
     }
 
