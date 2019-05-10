@@ -10,6 +10,7 @@ public class MultiThreadedServer implements Runnable {
     Socket clientsocket;
     String quote = "Thou art so fair!!!";
     String ip;
+
     MultiThreadedServer(Socket clientsocket) {
         this.clientsocket = clientsocket;
     }
@@ -23,68 +24,75 @@ public class MultiThreadedServer implements Runnable {
         }
     }
 
+
+
     @Override
     public void run() {
         synchronized (this){
             try{
-            System.out.println("Connected to " +
-                    clientsocket.getInetAddress());
-            ip = String.valueOf(clientsocket.getInetAddress());
-            BufferedReader from = new BufferedReader(
-                    new InputStreamReader(
-                            clientsocket.getInputStream()
-                    )
-            );
+                System.out.println("Connected to " +
+                        clientsocket.getInetAddress());
+                ip = String.valueOf(clientsocket.getInetAddress());
 
-            PrintWriter to = new PrintWriter(clientsocket.getOutputStream(),
-                    true);
+                BufferedReader from = new BufferedReader(
+                        new InputStreamReader(
+                                clientsocket.getInputStream()
+                        )
+                );
 
-            while(true){
+                PrintWriter to = new PrintWriter(clientsocket.getOutputStream(),
+                        true);
 
-
+                while(true){
 
                     String request = from.readLine();
                     if (!request.equals(null)){
                         System.out.println(ip+": Received quote request from client ");
                         Random rand = new Random();
-                        BigInteger bigint = num_generator();
 
-                        //System.out.println(bigint);
                         int rand1 = rand.nextInt(4) + 2;
-                        String stringarray = ""; //string to contain all primes of primes generated
-                        BigInteger[] outputarray = new BigInteger[rand1]; //big integer array
+                        String stringarray = "";
+                        Long[] outputarray = new Long[rand1];
 
                         for (int i=0; i <rand1; i++){
+
                             BigInteger rand2 = this.num_generator();
                             stringarray = stringarray.concat(rand2.toString());
-                            if(i != rand1-1) {
-                                stringarray = stringarray.concat(",");
-                            }
-                            outputarray[i] = rand2;
+                            stringarray = stringarray.concat(",");
+                            outputarray[i] = rand2.longValue();
                         }
+                        System.out.println(ip+": Sending: " + stringarray + "to client");
+                        to.println(stringarray);
+                        while(true){
+                            boolean iscorrect = true;
 
-                        System.out.println(ip+": Sending: " + stringarray + " to client");
-                        to.println(stringarray); //send factors back to client
-                        boolean iscorrect = true;
-                        System.out.println(ip+": Verifying factors");
-                        for (int i = 0; i < rand1; i++){
-                            String inputline = from.readLine();
-                            System.out.println(ip+": Verifying factor: " + inputline + " for: " + outputarray[i]);
-                            BigInteger input = new BigInteger(inputline);
-                            if (outputarray[i].mod(input) == BigInteger.ZERO){
-                             //
+                            for (int i = 0; i < rand1; i++){
+                                String inputline = from.readLine();
+                                String[] inputlist = inputline.split(",");
+                                long input = Long.parseLong(inputlist[0]);
+                                int index = Integer.parseInt(inputlist[1])-1;
+                                System.out.println(ip+": Verifying factor: " + input + "for: " + outputarray[index]);
+                                if (outputarray[index] % input == 0){
+                                    System.out.println("Correct!");
+                                }
+                                else{
+                                    System.out.println(ip+": Incorrect, please enter factors again");
+                                    iscorrect = false;
+                                }
+                            }
+                            if (iscorrect){
+                                System.out.println(ip+": Sending Correct!");
+                                System.out.println(ip+": Sending Quote: "+"\""+this.quote+"\"");
+                                //to.println("Correct");
 
+                                to.println(this.quote);
+                                break;
                             }
                             else{
-                                System.out.println(ip+": Incorrect");
-                                iscorrect = false;
+                                to.println("incorrect");
                             }
                         }
-                        if (iscorrect){
-                            System.out.println(ip+": Sending Correct!");
-                            System.out.println(ip+": Sending Quote: "+"\""+this.quote+"\"");
-                            to.println(this.quote);
-                        }
+
                     }
                 }
             }
@@ -97,10 +105,10 @@ public class MultiThreadedServer implements Runnable {
     }
 
     public static BigInteger num_generator(){
-        //generate a factor of prime big integer
         Random rand1 = new Random();
-        BigInteger prime1 = BigInteger.probablePrime(16, rand1);
-        BigInteger prime2 = BigInteger.probablePrime(16, rand1);
+
+        BigInteger prime1 = BigInteger.probablePrime(31, rand1);
+        BigInteger prime2 = BigInteger.probablePrime(31, rand1);
         BigInteger bigint = prime1.multiply(prime2);
         return bigint ;
     }

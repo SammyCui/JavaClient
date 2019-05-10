@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Arrays;
 
-public class ClientMulti {
+public class fakeclient {
 
     public static void main(String[] args) {
 
@@ -18,24 +18,22 @@ public class ClientMulti {
         PrintWriter to;
         Scanner kbd = new Scanner(System.in);
 
-        System.out.print("Enter IP address: ");
-        String ip = kbd.nextLine().trim();
+        String ip = "10.70.20.65"; //TODO should get input from console
+
 
 
         try {
             sock = new Socket(ip, 12346);
 
             //client successfully connect to server
-            System.out.println("Attempting connection to " + ip + "...Please Wait!");
-
             System.out.println("Connected to " +
                     sock.getInetAddress()); //hello
 
 
 
-            from = new BufferedReader(new InputStreamReader (sock.getInputStream()) //handles data coming from server
+            from = new BufferedReader(new InputStreamReader (sock.getInputStream()) //TODO should handle data coming from server
             );
-            to = new PrintWriter(sock.getOutputStream(), // handle data going to server
+            to = new PrintWriter(sock.getOutputStream(), //TODO should handle data going to server
                     true);
 
 
@@ -55,29 +53,30 @@ public class ClientMulti {
 
                 String response = "Finding factors of "+listNum;
                 System.out.println(response);
-                int threadnumber = 1;
-                //start as many threads as there are numbers to be guessed
-                for (String number : numbers){
-                    Guess guess = new Guess(sock, number, threadnumber); //create object to compute the factors of the numbers provided by server, also used to synchronize
 
-                    Thread t = new Thread(guess); //create new thread
-                    t.start();
-                    threadnumber ++;
+
+
+                while(true){
+                    for (String number : numbers){
+                        Scanner scanner = new Scanner(System.in);
+                        String inputline = scanner.nextLine();
+
+                        to.println(inputline);
+
+
+                    }
+                    String iscorrect = from.readLine();
+                    if (iscorrect.equals("Correct")){
+                        break;
+                    }
 
                 }
 
-                String iscorrect = from.readLine(); //read quote from server
-                if (iscorrect.equals("Correct")){
-                    String quote = from.readLine();
-                    System.out.println("Received Correct from Server");
-                    System.out.println("Received Quote: \""+quote+"\"");
-                }
-
-
+                String quote;
+                quote = from.readLine(); //read quote from server
+                System.out.println("Received Correct from Server");
+                System.out.println("Received Quote: \""+quote+"\"");
             }
-
-
-
 
         } catch (IOException e) {
             e.printStackTrace();
